@@ -90,3 +90,7 @@ button {
   border-radius: 5px;
   min-width: 130px;
 }
+
+footer {
+  margin-block: 1rem;
+}
