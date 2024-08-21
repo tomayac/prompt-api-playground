@@ -34,8 +34,30 @@
         <label for="prompt-input">Prompt:</label>
         <textarea id="prompt-input">Tell me a joke.</textarea>
         <button type="submit" id="submit-button">Submit prompt</button>
+        <button type="button" id="reset-button">Reset session</button>
       </form>
-      <h2>Response:</h2>
+      <h2>Session stats</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Temperature</th>
+            <th>Top-k</th>
+            <th>Tokens so far</th>
+            <th>Tokens left</th>
+            <th>Total tokens</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td id="temperature">N/A</td>
+            <td id="top-k">N/A</td>
+            <td id="tokens-so-far">N/A</td>
+            <td id="tokens-left">N/A</td>
+            <td id="max-tokens">N/A</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>Conversation</h2>
       <div id="response-area"></div>
       <details>
         <summary>Raw response</summary>

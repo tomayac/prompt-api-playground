@@ -84,13 +84,24 @@ button {
   margin-top: 10px;
   cursor: pointer;
   padding: 5px 10px;
-  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
   min-width: 130px;
 }
 
+[type=submit] {
+  background-color: #4caf50;
+}
+
+#reset-button {
+  background-color: #f44336;
+}
+
 footer {
   margin-block: 1rem;
+}
+
+table {
+  font-variant-numeric: tabular-nums;
 }

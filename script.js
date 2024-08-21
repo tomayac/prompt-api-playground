@@ -13,12 +13,21 @@ import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   const promptInput = document.getElementById('prompt-input');
   const responseArea = document.getElementById('response-area');
   const copyLinkButton = document.getElementById('copy-link-button');
+  const resetButton = document.getElementById('reset-button');
   const copyHelper = document.querySelector('small');
   const rawResponse = document.querySelector('details div');
   const form = document.querySelector('form');
+  const maxTokensInfo = document.getElementById('max-tokens');
+  const temperatureInfo = document.getElementById('temperature');
+  const tokensLeftInfo = document.getElementById('tokens-left');
+  const tokensSoFarInfo = document.getElementById('tokens-so-far');
+  const topKInfo = document.getElementById('top-k');
+
   responseArea.style.display = 'none';
 
-  if (!window.ai) {
+  let session = null;
+
+  if (!window.ai && !window.ai.assistant) {
     errorMessage.style.display = 'block';
     errorMessage.innerHTML = `Your browser doesn't support the Prompt API. If you're on Chrome, join the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">Early Preview Program</a> to enable it.`;
     return;
@@ -35,20 +44,30 @@ import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     const prompt = promptInput.value.trim();
     if (!prompt) return;
     responseArea.style.display = 'block';
-    responseArea.textContent = 'Generating response...';
+    const heading = document.createElement('h3');
+    heading.textContent = prompt;
+    responseArea.append(heading);
+    const p = document.createElement('p');
+    p.classList.add('answer');
+    p.textContent = 'Generating response...';
+    responseArea.append(p);
     let fullResponse = '';
 
     try {
-      const model = await window.ai.createTextSession();
-      const stream = await model.promptStreaming(prompt);
+      console.log('session', session)
+      if (!session) {
+        session = await window.ai.assistant.create();
+        updateStats();
+      }
+      const stream = await session.promptStreaming(prompt);
 
       for await (const chunk of stream) {
         fullResponse = chunk.trim();
-        responseArea.innerHTML = DOMPurify.sanitize(marked.parse(fullResponse));
+        p.innerHTML = DOMPurify.sanitize(marked.parse(fullResponse));
         rawResponse.innerText = fullResponse;
       }
     } catch (error) {
-      responseArea.textContent = `Error: ${error.message}`;
+      p.textContent = `Error: ${error.message}`;
     } finally {
       if (highlight) {
         problematicArea.style.display = 'block';
@@ -57,7 +76,19 @@ import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
       }
       copyLinkButton.style.display = 'inline-block';
       copyHelper.style.display = 'inline';
+      updateStats();
     }
+  };
+
+  const updateStats = () => {
+    const { maxTokens, temperature, tokensLeft, tokensSoFar, topK } = session;
+    maxTokensInfo.textContent = new Intl.NumberFormat('en-US', ).format(maxTokens);
+    temperatureInfo.textContent = new Intl.NumberFormat('en-US', { maximumSignificantDigits: 5 }).format(
+      temperature,
+    ),
+    tokensLeftInfo.textContent = new Intl.NumberFormat('en-US', ).format(tokensLeft);
+    tokensSoFarInfo.textContent = new Intl.NumberFormat('en-US', ).format(tokensSoFar);
+    topKInfo.textContent = new Intl.NumberFormat('en-US', ).format(topK); ;
   };
 
   const params = new URLSearchParams(location.search);
@@ -78,6 +109,28 @@ import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
       e.preventDefault();
       form.dispatchEvent(new Event('submit'));
     }
+  });
+
+  promptInput.addEventListener('focus', () => {
+    promptInput.select();
+  });
+
+  resetButton.addEventListener('click', () => {
+    promptInput.value = '';
+    responseArea.style.display = 'none';
+    responseArea.innerHTML = '';
+    rawResponse.innerHTML = '';
+    problematicArea.style.display = 'none';
+    copyLinkButton.style.display = 'none';
+    copyHelper.style.display = 'none';
+    maxTokensInfo.textContent = 'N/A';
+    temperatureInfo.textContent = 'N/A';
+    tokensLeftInfo.textContent = 'N/A';
+    tokensSoFarInfo.textContent = 'N/A';
+    topKInfo.textContent = 'N/A';
+    promptInput.focus();
+    session.destroy();
+    session = null;
   });
 
   copyLinkButton.addEventListener('click', () => {
