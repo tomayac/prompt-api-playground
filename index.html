@@ -2,7 +2,7 @@
   Copyright 2024 Google LLC
   SPDX-License-Identifier: Apache-2.0
  -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="style.css" />
     <title>Prompt API Playground</title>
     <script>
-      if (!isSecureContext) location.protocol = 'https:';
+      if (!isSecureContext) location.protocol = "https:";
     </script>
     <script src="script.js" type="module"></script>
   </head>
@@ -31,10 +31,18 @@
     <div id="error-message"></div>
     <div id="prompt-area">
       <form>
-        <label for="prompt-input">Prompt:</label>
-        <textarea id="prompt-input">Tell me a joke.</textarea>
+        <label>
+          Prompt:
+          <textarea id="prompt-input"></textarea>
+        </label>
         <button type="submit" id="submit-button">Submit prompt</button>
         <button type="button" id="reset-button">Reset session</button>
+        <div class="settings">
+          <label for="session-top-k">Top-k</label>
+          <input id="session-top-k" min="1" type="number" />
+          <label for="session-temperature">Temperature</label>
+          <input id="session-temperature" type="number" step="any" min="0" />
+        </div>
       </form>
       <h2>Session stats</h2>
       <table>
@@ -49,11 +57,11 @@
         </thead>
         <tbody>
           <tr>
-            <td id="temperature">N/A</td>
-            <td id="top-k">N/A</td>
-            <td id="tokens-so-far">N/A</td>
-            <td id="tokens-left">N/A</td>
-            <td id="max-tokens">N/A</td>
+            <td id="temperature">&nbsp;</td>
+            <td id="top-k">&nbsp;</td>
+            <td id="tokens-so-far">&nbsp;</td>
+            <td id="tokens-left">&nbsp;</td>
+            <td id="max-tokens">&nbsp;</td>
           </tr>
         </tbody>
       </table>
@@ -64,15 +72,18 @@
         <div></div>
       </details>
       <button id="copy-link-button">Copy link</button>
-      <small>💡 If there's a problem with the response, select the problematic text with your mouse before clicking the button.</small>
+      <small
+        >💡 If there's a problem with the response, select the problematic text
+        with your mouse before clicking the button.</small
+      >
       <div id="problematic-area">
         <h2>Problematic:</h2>
         <pre id="problem"></pre>
       </div>
     </div>
     <footer>
-      Made by <a href="https://github.com/tomayac/">@tomayac</a>.
-      Source code on <a href="https://github.com/tomayac/prompt-api-playground">GitHub</a>.
+      Made by <a href="https://github.com/tomayac/">@tomayac</a>. Source code on
+      <a href="https://github.com/tomayac/prompt-api-playground">GitHub</a>.
     </footer>
   </body>
 </html>
