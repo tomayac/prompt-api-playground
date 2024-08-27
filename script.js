@@ -57,7 +57,6 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     let fullResponse = "";
 
     try {
-      console.log("session", session);
       if (!session) {
         await updateSession();
         updateStats();
