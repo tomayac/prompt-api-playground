@@ -27,7 +27,7 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
 
   responseArea.style.display = "none";
 
-  let sessionFactory = window.ai.assistant ? window.ai.assistant : window.ai.languageModel;
+  let sessionFactory = window.ai?.assistant ? window.ai.assistant : window.ai?.languageModel;
   let session = null;
 
   if (!window.ai || !sessionFactory) {
