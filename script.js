@@ -28,11 +28,20 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   responseArea.style.display = "none";
 
   let sessionFactory = window.ai?.assistant ? window.ai.assistant : window.ai?.languageModel;
+  let capabilities = sessionFactory ? (await sessionFactory.capabilities()) : { available: 'no' };
   let session = null;
 
-  if (!window.ai || !sessionFactory) {
+  if (capabilities.available == 'no') {
     errorMessage.style.display = "block";
     errorMessage.innerHTML = `Your browser doesn't support the Prompt API. If you're on Chrome, join the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">Early Preview Program</a> to enable it.`;
+    try { await sessionFactory?.create(); } catch {};  // Signal to the browser that Prompt API availability is desired.
+    return;
+  }
+  
+  if (capabilities.available != 'readily') {
+    errorMessage.style.display = "block";
+    errorMessage.innerHTML = `Your browser doesn't have a Prompt API model readily available. Please follow the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">Early Preview Program</a> instructions to obtain a model.`;
+    try { await sessionFactory?.create(); } catch {};  // Signal to the browser that Prompt API availability is desired.
     return;
   }
 
@@ -189,11 +198,10 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   });
 
   if (!session) {
-    const { defaultTopK, maxTopK, defaultTemperature } =
-      await sessionFactory.capabilities();
-    sessionTemperature.value = defaultTemperature;
-    sessionTopK.value = defaultTopK;
-    sessionTopK.max = maxTopK;
+    capabilities = await sessionFactory.capabilities();
+    sessionTemperature.value = capabilities.defaultTemperature;
+    sessionTopK.value = capabilities.defaultTopK;
+    sessionTopK.max = capabilities.maxTopK;
     await updateSession();
   }
 })();
