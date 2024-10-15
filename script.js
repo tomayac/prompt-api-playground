@@ -29,7 +29,7 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
 
   let session = null;
 
-  if (!window.ai || !window.ai.assistant) {
+  if (!self.ai || !self.ai.languageModel) {
     errorMessage.style.display = "block";
     errorMessage.innerHTML = `Your browser doesn't support the Prompt API. If you're on Chrome, join the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">Early Preview Program</a> to enable it.`;
     return;
@@ -152,7 +152,7 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   copyLinkButton.addEventListener("click", () => {
     const prompt = promptInput.value.trim();
     if (!prompt) return;
-    const url = new URL(window.location.href);
+    const url = new URL(self.location.href);
     url.searchParams.set("prompt", encodeURIComponent(prompt));
     const selection = getSelection().toString() || "";
     if (selection) {
@@ -171,7 +171,7 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   });
 
   const updateSession = async () => {
-    session = await window.ai.assistant.create({
+    session = await self.ai.languageModel.create({
       temperature: Number(sessionTemperature.value),
       topK: Number(sessionTopK.value),
     });
@@ -189,7 +189,7 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
 
   if (!session) {
     const { defaultTopK, maxTopK, defaultTemperature } =
-      await window.ai.assistant.capabilities();
+      await self.ai.languageModel.capabilities();
     sessionTemperature.value = defaultTemperature;
     sessionTopK.value = defaultTopK;
     sessionTopK.max = maxTopK;
