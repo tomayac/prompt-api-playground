@@ -8,6 +8,7 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
 
 (async () => {
   const errorMessage = document.getElementById("error-message");
+  const costSpan = document.getElementById("cost");
   const promptArea = document.getElementById("prompt-area");
   const problematicArea = document.getElementById("problematic-area");
   const promptInput = document.getElementById("prompt-input");
@@ -124,6 +125,18 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
 
   promptInput.addEventListener("focus", () => {
     promptInput.select();
+  });
+
+  promptInput.addEventListener("input", async () => {
+    const value = promptInput.value.trim();
+    if (!value) {
+      return;
+    }
+    const cost = await session.countPromptTokens(value);
+    if (!cost) {
+      return;
+    }
+    costSpan.textContent = `${cost} token${cost === 1 ? '' : 's'}`;
   });
 
   const resetUI = () => {
